@@ -67,7 +67,16 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
 
     @Override
     public List<TodoDto> objectServiceList() {
-        return null;
+        //repodan verileri entity olarak cektik.
+        Iterable<TodoEntity> todoEntities = todoRepository.findAll();
+        List<TodoDto> todoDtoList = new ArrayList<>(); //dto verilerinin tutulacagi bos array
+
+        //verielri dtoya cevirdik tek tek. Ve bos listemize ekledik
+        for(TodoEntity entity : todoEntities){
+            TodoDto todoDto = entityToDto(entity);
+            todoDtoList.add(todoDto);
+        }
+        return todoDtoList;
     }
 
     @Override

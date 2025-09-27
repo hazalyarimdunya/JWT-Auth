@@ -45,8 +45,16 @@ public class TodoControllerImpl implements ITodoController<TodoDto> {
     }
 
     @Override
+    @GetMapping(value = "/list")
     public ResponseEntity<ApiResult<List<TodoDto>>> objectApiList() {
-       return null;
+        try {
+            List<TodoDto> list = todoServices.objectServiceList();
+            return ResponseEntity.ok(ApiResult.success(list));
+        }
+        catch (Exception e) {
+            return ResponseEntity.ok(ApiResult.error("Server error",e.getMessage(),"/todo/list"));
+        }
+
     }
 
 
