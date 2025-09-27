@@ -1,6 +1,6 @@
 package com.hazalyarimdunya.auth_jwt_app.dto;
 
-import com.hazalyarimdunya.auth_jwt_app.entity.User;
+import com.hazalyarimdunya.auth_jwt_app.entity.UserEntity;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +17,5 @@ public class RegisterRequest {
     @NotBlank
     private String password;
 
-    private User.Role role = User.Role.USER; // default USER
+    private UserEntity.Role role = UserEntity.Role.USER; // default USER
 }

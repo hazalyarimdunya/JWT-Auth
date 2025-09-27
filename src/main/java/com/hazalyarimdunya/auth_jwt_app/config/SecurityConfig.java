@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/todo/**").hasAnyAuthority("USER","ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

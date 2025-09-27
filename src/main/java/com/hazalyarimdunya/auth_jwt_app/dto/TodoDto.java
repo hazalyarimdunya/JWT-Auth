@@ -9,9 +9,15 @@ import lombok.Setter;
 
 public class TodoDto {
 
-    @NotEmpty
+
+    public static final Long serialVersionUID=1L;
     private Long id;
 
     @NotEmpty(message = "Title cannot be empty")
     private String title;
+
+    @NotEmpty(message = "Desc cannot be empty")
+    private String description;
+
+
 }

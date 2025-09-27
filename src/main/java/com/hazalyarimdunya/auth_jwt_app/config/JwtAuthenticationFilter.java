@@ -61,7 +61,7 @@ package com.hazalyarimdunya.auth_jwt_app.config;
 
 
 
-import com.hazalyarimdunya.auth_jwt_app.entity.User;
+import com.hazalyarimdunya.auth_jwt_app.entity.UserEntity;
 import com.hazalyarimdunya.auth_jwt_app.services.JwtService;
 import com.hazalyarimdunya.auth_jwt_app.services.UserService;
 import jakarta.servlet.FilterChain;
@@ -101,16 +101,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String username = jwtService.extractUsername(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = userService.getByUsername(username)
+            UserEntity userEntity = userService.getByUsername(username)
                     .orElse(null);
 
-            if (user != null && jwtService.validateToken(token, user)) {
+            if (userEntity != null && jwtService.validateToken(token, userEntity)) {
                 // DİKKAT: burada authority = "USER" veya "ADMIN"
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                user.getUsername(),
+                                userEntity.getUsername(),
                                 null,
-                                List.of(new SimpleGrantedAuthority(user.getRole().name()))
+                                List.of(new SimpleGrantedAuthority(userEntity.getRole().name()))
                         );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

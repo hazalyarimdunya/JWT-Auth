@@ -1,5 +1,5 @@
 package com.hazalyarimdunya.auth_jwt_app.services;
-import com.hazalyarimdunya.auth_jwt_app.entity.User;
+import com.hazalyarimdunya.auth_jwt_app.entity.UserEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -22,10 +22,10 @@ public class JwtService {
         }
 
         // Token oluşturma
-        public String generateToken(User user) {
+        public String generateToken(UserEntity userEntity) {
             return Jwts.builder()
-                    .setSubject(user.getUsername())
-                    .claim("role", user.getRole().name())
+                    .setSubject(userEntity.getUsername())
+                    .claim("role", userEntity.getRole().name())
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                     .signWith(key, SignatureAlgorithm.HS256)
@@ -34,7 +34,7 @@ public class JwtService {
 
         // Username alma
         public String extractUsername(String token) {
-            return Jwts.parser()
+            return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
@@ -43,13 +43,13 @@ public class JwtService {
         }
 
         // Token geçerli mi?
-        public boolean validateToken(String token, User user) {
+        public boolean validateToken(String token, UserEntity userEntity) {
             String username = extractUsername(token);
-            return username.equals(user.getUsername()) && !isTokenExpired(token);
+            return username.equals(userEntity.getUsername()) && !isTokenExpired(token);
         }
 
         private boolean isTokenExpired(String token) {
-            Date expiration = Jwts.parser()
+            Date expiration = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)

@@ -3,7 +3,7 @@ package com.hazalyarimdunya.auth_jwt_app.controller;
 import com.hazalyarimdunya.auth_jwt_app.dto.AuthRequest;
 import com.hazalyarimdunya.auth_jwt_app.dto.AuthResponse;
 import com.hazalyarimdunya.auth_jwt_app.dto.RegisterRequest;
-import com.hazalyarimdunya.auth_jwt_app.entity.User;
+import com.hazalyarimdunya.auth_jwt_app.entity.UserEntity;
 import com.hazalyarimdunya.auth_jwt_app.services.JwtService;
 import com.hazalyarimdunya.auth_jwt_app.services.UserService;
 import jakarta.validation.Valid;
@@ -25,26 +25,26 @@ public class AuthController
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request){ //Validation ile boş username/password engelleniyor
-        User user = userService.registerUser(
+        UserEntity userEntity = userService.registerUser(
                 request.getUsername(),
                 request.getPassword(),
                 request.getRole()
                 );
-        return ResponseEntity.ok("User registered successfully "+ user.getUsername());
+        return ResponseEntity.ok("User registered successfully "+ userEntity.getUsername());
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody AuthRequest request) {
-        User user = userService.getByUsername(request.getUsername())
+        UserEntity userEntity = userService.getByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Password kontrolü
-        if (!userService.checkPassword(request.getPassword(), user.getPassword())) {
+        if (!userService.checkPassword(request.getPassword(), userEntity.getPassword())) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
         // Token üret
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(userEntity);
         return ResponseEntity.ok(new AuthResponse(token));
     }
 

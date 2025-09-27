@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Entity(name = "Todos")
 @Table(name = "todo")
-public class Todo {
+public class TodoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
@@ -30,4 +30,9 @@ public class Todo {
     @CreationTimestamp //otomatik olarak tarih ve zamanını atar.
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity userEntity;   // Token'dan gelen user ile ilişkilendirilecek
 }

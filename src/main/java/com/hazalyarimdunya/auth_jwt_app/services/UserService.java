@@ -1,6 +1,6 @@
 package com.hazalyarimdunya.auth_jwt_app.services;
 
-import com.hazalyarimdunya.auth_jwt_app.entity.User;
+import com.hazalyarimdunya.auth_jwt_app.entity.UserEntity;
 import com.hazalyarimdunya.auth_jwt_app.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,7 +21,7 @@ public class UserService {
 
 
     //kullanici kaydi
-    public User registerUser(String username, String password , User.Role role) {
+    public UserEntity registerUser(String username, String password , UserEntity.Role role) {
         // Kullanıcı zaten var mı kontrol et
         if(userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -30,16 +30,16 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(password);
 
         //gerçek User nesnesini oluştur
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .username(username)
                 .password(encodedPassword) // daha guvenli
                 .role(role).build();
-        return userRepository.save(user);
+        return userRepository.save(userEntity);
 
 
     }
 
-    public Optional<User> getByUsername(String username) {
+    public Optional<UserEntity> getByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
