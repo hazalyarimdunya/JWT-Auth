@@ -28,7 +28,7 @@ import java.util.List;
 public class TodoControllerImpl implements ITodoController<TodoDto> {
 
     @Autowired
-    private final TodoServicesImpl todoServices;
+    private final ITodoServices iTodoServices;
     private final ObjectMapper  objectMapper;
 
     @Override
@@ -36,7 +36,7 @@ public class TodoControllerImpl implements ITodoController<TodoDto> {
     public ResponseEntity<ApiResult<?>> objectApiCreate(@Valid @RequestBody TodoDto todoDto) {
 
         try {
-            TodoDto createdDto = (TodoDto) todoServices.objectServiceCreate(todoDto);
+            TodoDto createdDto = (TodoDto) iTodoServices.objectServiceCreate(todoDto);
             return ResponseEntity.ok(ApiResult.success(createdDto));
         }
         catch (Exception e) {
@@ -48,24 +48,34 @@ public class TodoControllerImpl implements ITodoController<TodoDto> {
     @GetMapping(value = "/list")
     public ResponseEntity<ApiResult<List<TodoDto>>> objectApiList() {
         try {
-            List<TodoDto> list = todoServices.objectServiceList();
+            List<TodoDto> list = iTodoServices.objectServiceList();
             return ResponseEntity.ok(ApiResult.success(list));
         }
         catch (Exception e) {
             return ResponseEntity.ok(ApiResult.error("Server error",e.getMessage(),"/todo/list"));
         }
-
     }
 
 
     @Override
-    public ResponseEntity<ApiResult<?>> objectApiFindById(Long id) {
-        return null;
+    @GetMapping(value = "/find/{id}")
+    public ResponseEntity<ApiResult<?>> objectApiFindById(@PathVariable(name = "id")  Long id) {
+        try {
+            if (id == null) {
+                return ResponseEntity.ok(ApiResult.notFound("null", "/todo/findById"));
+            }
+            TodoDto found = (TodoDto) iTodoServices.objectServiceFindById(id);
+            return ResponseEntity.ok(ApiResult.success(found));
+        } catch (Exception ex) {
+            return ResponseEntity.ok(ApiResult.error("serverError", ex.getMessage(), "/todo/findById"));
+        }
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> objectApiUpdate(Long id, TodoDto todoDto) {
-        return null;
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<ApiResult<?>> objectApiUpdate(@PathVariable(name = "id") Long id, @Valid @RequestBody TodoDto todoDto) {
+       return null;
+
     }
 
     @Override

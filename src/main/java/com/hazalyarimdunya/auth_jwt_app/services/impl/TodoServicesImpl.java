@@ -7,6 +7,7 @@ import com.hazalyarimdunya.auth_jwt_app.entity.UserEntity;
 import com.hazalyarimdunya.auth_jwt_app.repository.TodoRepository;
 import com.hazalyarimdunya.auth_jwt_app.repository.UserRepository;
 import com.hazalyarimdunya.auth_jwt_app.services.interfaces.ITodoServices;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,6 +39,7 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
     }
 
     @Override
+    @Transactional
     public TodoDto objectServiceCreate(TodoDto todoDto) {
 
         if (todoDto == null) {
@@ -81,15 +83,25 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
 
     @Override
     public TodoDto objectServiceFindById(Long id) {
-        return null;
+        if (id == null) {
+            throw new NullPointerException("Id is null");
+        }
+        else {
+            TodoEntity entity = todoRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Id not found"));
+            return entityToDto(entity);
+        }
     }
 
     @Override
+    @Transactional
     public TodoDto objectServiceUpdate(Long id, TodoDto todoDto) {
-        return null;
+       return null;
+
     }
 
     @Override
+    @Transactional
     public TodoDto objectServiceDelete(Long id) {
         return null;
     }
