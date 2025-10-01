@@ -96,8 +96,18 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
     @Override
     @Transactional
     public TodoDto objectServiceUpdate(Long id, TodoDto todoDto) {
-       return null;
+        TodoDto findDto = objectServiceFindById(id); //bul
+        if (findDto != null) {
+            //buldugun dto verisini entitye donustur/
+            TodoEntity findEntity = dtoToEntity(findDto);
+            //alanlari setle
+            findEntity.setTitle(todoDto.getTitle());
+            findEntity.setDescription(todoDto.getDescription());
+            //repoya kaydet
+            todoRepository.save(findEntity);
+        }
 
+        return todoDto;
     }
 
     @Override

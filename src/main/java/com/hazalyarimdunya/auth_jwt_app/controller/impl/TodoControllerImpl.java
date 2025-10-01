@@ -74,7 +74,12 @@ public class TodoControllerImpl implements ITodoController<TodoDto> {
     @Override
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<ApiResult<?>> objectApiUpdate(@PathVariable(name = "id") Long id, @Valid @RequestBody TodoDto todoDto) {
-       return null;
+        try {
+            TodoDto updatedDto = (TodoDto) iTodoServices.objectServiceUpdate(id, todoDto);
+            return ResponseEntity.ok(ApiResult.success(updatedDto));
+        }catch (Exception ex) {
+            return ResponseEntity.ok(ApiResult.error("Server Error", ex.getMessage(),"/update/id"));
+        }
 
     }
 
