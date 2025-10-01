@@ -84,7 +84,14 @@ public class TodoControllerImpl implements ITodoController<TodoDto> {
     }
 
     @Override
-    public ResponseEntity<ApiResult<?>> objectApiDelete(Long id) {
-        return null;
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<ApiResult<?>> objectApiDelete(@PathVariable(name = "id") Long id) {
+        try {
+            TodoDto deletedDto = (TodoDto) iTodoServices.objectServiceDelete(id);
+            return ResponseEntity.ok(ApiResult.success(deletedDto));
+        }catch (Exception ex) {
+            return ResponseEntity.ok(ApiResult.error("Server Error", ex.getMessage(),"/delete/id"));
+        }
+
     }
 }

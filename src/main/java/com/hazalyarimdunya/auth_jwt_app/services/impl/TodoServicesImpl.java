@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,8 +114,12 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
 
     @Override
     @Transactional
-    public TodoDto objectServiceDelete(Long id) {
-        return null;
+    public TodoDto objectServiceDelete( Long id) {
+        TodoDto findDto = objectServiceFindById(id);//bul
+        if (findDto != null) {
+            todoRepository.deleteById(id);
+        }
+        return findDto;
     }
 
 }
