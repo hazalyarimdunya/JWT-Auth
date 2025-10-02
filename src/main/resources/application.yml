@@ -24,4 +24,3 @@ server:
 jwt:
   secret: MyVeryLongAndSecureJwtSecretKey_ChangeThisToEnvVar_2025  # daha sonra JwtService?de kullanaca??z
   expiration: 900000  # 15 dakika (milisaniye)
-
