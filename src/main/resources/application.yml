@@ -6,7 +6,6 @@ spring:
     password: 172503
     driver-class-name: org.postgresql.Driver
 
-
   jpa:
     hibernate:
       ddl-auto: update   # ilk a?amada tabloyu otomatik olu?turur
@@ -17,10 +16,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema : jwtappdb
 
-
 server:
   port: 8080
 
 jwt:
   secret: MyVeryLongAndSecureJwtSecretKey_ChangeThisToEnvVar_2025  # daha sonra JwtService?de kullanaca??z
   expiration: 900000  # 15 dakika (milisaniye)
+
+cache:
+    type: hazelcast  #Spring Boot’a cache provider’ın Hazelcast olduğunu söylüyor.
+hazelcast:
+  instance-name: hazelcast-instance
+  map:
+    todos:
+      time-to-live-seconds: 300   # 5 dakika

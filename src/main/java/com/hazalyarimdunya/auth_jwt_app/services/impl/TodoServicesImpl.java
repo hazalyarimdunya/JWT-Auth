@@ -10,6 +10,8 @@ import com.hazalyarimdunya.auth_jwt_app.services.interfaces.ITodoServices;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,13 +44,15 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
 
     @Override
     @Transactional
+    @CacheEvict(value = "todos" , key = "#root.target.getCurrentUsername()")//Hazelcast tarafında da todos isimli bir map oluşuyor.
     public TodoDto objectServiceCreate(TodoDto todoDto) {
 
         if (todoDto == null) {
             throw new NullPointerException("TodoDto is null");
         }
         // Şu an login olan kullanıcıyı al
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String username = getCurrentUsername();
+        log.info("DB'den todolar çekiliyor -> " + username);  // <-- bu satır sadece DB çağrıldığında çalışacak
 
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -70,9 +74,11 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
     }
 
     @Override
+    @Cacheable(value = "todos",key = "#root.target.getCurrentUsername()")
     public List<TodoDto> objectServiceList() {
+        String username = getCurrentUsername();
         //repodan verileri entity olarak cektik.
-        Iterable<TodoEntity> todoEntities = todoRepository.findAll();
+        Iterable<TodoEntity> todoEntities = todoRepository.findByUserEntityUsername(username);
         List<TodoDto> todoDtoList = new ArrayList<>(); //dto verilerinin tutulacagi bos array
 
         //verielri dtoya cevirdik tek tek. Ve bos listemize ekledik
@@ -97,11 +103,15 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
 
     @Override
     @Transactional
+    @CacheEvict(value = "todos" , key = "#root.target.getCurrentUsername()")
     public TodoDto objectServiceUpdate(Long id, TodoDto todoDto) {
-        TodoDto findDto = objectServiceFindById(id); //bul
-        if (findDto != null) {
-            //buldugun dto verisini entitye donustur/
-            TodoEntity findEntity = dtoToEntity(findDto);
+
+        String username = getCurrentUsername();
+
+        TodoEntity findEntity = todoRepository.findById(id) //bul
+                .orElseThrow(()-> new RuntimeException("Todo not found"));
+        if (findEntity != null) {
+
             //alanlari setle
             findEntity.setTitle(todoDto.getTitle());
             findEntity.setDescription(todoDto.getDescription());
@@ -109,17 +119,26 @@ public class TodoServicesImpl implements ITodoServices<TodoDto, TodoEntity> {
             todoRepository.save(findEntity);
         }
 
-        return todoDto;
+        return entityToDto(findEntity);
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "todos" , key = "#root.target.getCurrentUsername()")
     public TodoDto objectServiceDelete( Long id) {
+        String username = getCurrentUsername();
+
         TodoDto findDto = objectServiceFindById(id);//bul
         if (findDto != null) {
             todoRepository.deleteById(id);
         }
         return findDto;
+    }
+
+
+    // Helper method
+    public String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
 }
